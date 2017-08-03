@@ -3,14 +3,14 @@ import pandas as pandas
 import numpy as np
 import twitter
 
-def get_key_and_secrets():
+def get_credential_info():
     with open("info.txt", "r") as file:
         text = file.read()
     keys = text.split('\n')[1]
     keys = keys.split(',')
     return keys
 
-keys = get_key_and_secrets()
+keys = get_credential_info()
 consumer_key = keys[0]
 consumer_secret = keys[1]
 access_token_key = keys[2]
