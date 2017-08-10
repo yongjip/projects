@@ -8,7 +8,7 @@ import datetime
 from nltk.tokenize import word_tokenize, sent_tokenize, PunktSentenceTokenizer
 from nltk.corpus import stopwords, state_union
 from nltk import PorterStemmer
-
+from twitter_api_credential_info import *
 
 ps = PorterStemmer()
 
@@ -19,24 +19,11 @@ data_file = 'trump_tweets.txt'
 screen_name = "realDonaldTrump"
 user_id = 25073877
 
-def get_credential_info():
-    with open("info.txt", "r") as file:
-        text = file.read()
-    keys = text.split('\n')[1]
-    keys = keys.split(',')
-    return keys
-
 
 def get_existing_data(data_file):
     with open(data_file) as json_file:
         data = json.load(json_file)
     return data
-
-keys = get_credential_info()
-consumer_key = keys[0]
-consumer_secret = keys[1]
-access_token_key = keys[2]
-access_token_secret = keys[3]
 
 api = twitter.Api(consumer_key=consumer_key,
                   consumer_secret=consumer_secret,
@@ -45,7 +32,7 @@ api = twitter.Api(consumer_key=consumer_key,
 
 print(api.VerifyCredentials())
 
-# Donald Trump's Tweet ID == 25073877
+# Trump's Twitter ID == 25073877
 timeline = api.GetUserTimeline(user_id=user_id, count=200)
 new_data = [instance.AsDict() for instance in timeline]
 
