@@ -6,20 +6,18 @@ import json
 import pytz
 import time
 from datetime import datetime, timezone
-from dateutil import tz
-from nltk.tokenize import word_tokenize, sent_tokenize, PunktSentenceTokenizer
 from twitter_api_credential_info import *
 
 
-data_file = 'data/trump_tweets.txt'
-database = 'data/trump_tweets_downloaded.csv'
+json_data_file_path = 'data/trump_tweets.json'
+database_path = 'data/trump_tweets_downloaded.json'
 screen_name = "realDonaldTrump"
 user_id = 25073877
-
 col_names = ['source', 'text', 'created_at', 'retweet_count', 'favorite_count', 'is_retweet', 'id_str']
 
-def get_existing_data(data_path):
-    with open(data_path) as json_file:
+
+def load_json(file_path):
+    with open(file_path, "r") as json_file:
         data = json.load(json_file)
     return data
 
@@ -29,8 +27,13 @@ def get_source_from_a_tag(a_tag):
     return out
 
 
-def str_to_datetime(time_created):
+def str_from_twitter_to_datetime(time_created):
     time_created = datetime.strptime(time_created, '%a %b %d %H:%M:%S %z %Y')
+    return time_created
+
+
+def str_from_db_to_datetime(time_created):
+    time_created = datetime.strptime(time_created, '%m-%d-%Y %H:%M:%S')
     return time_created
 
 
@@ -43,55 +46,72 @@ def str_from_datetime(created_at):
     return created_at.strftime('%m-%d-%Y %H:%M:%S')
 
 
+def get_idx_to_remove_duplicates(new_data, time_last_updated, str_to_datetime):
+    for i, data in enumerate(new_data):
+        if str_to_datetime(data["created_at"]) < time_last_updated:
+            remove_after_this = i
+            break
+    return remove_after_this
+
+
+def dump_json(file_path, json_data):
+    with open(file_path, "w") as outfile:
+        json.dump(json_data, outfile)
+
+
+def get_last_updated_timestamp_for(json_data, str_to_datetime):
+    time_last_updated = json_data[0]["created_at"]
+    time_last_updated = str_to_datetime(time_last_updated)
+    return time_last_updated
+
+
+def standardize_dataframe_format(df):
+    '''
+    :param df:
+    1. clean source string removing HTML a tag
+    2. change timezone: UTC -> EST
+    3. if "is_retweet" is Null then "false"
+        else "ture"
+    :return: cleaned_df
+    '''
+    new_df.loc[:, "source"] = new_df.loc[:, "source"].map(get_source_from_a_tag)
+
+    created_times = new_df.loc[:, "created_at"]
+    created_times = created_times.map(str_from_twitter_to_datetime)
+    created_times = created_times.map(utc_to_est_tz)
+    created_times = created_times.map(str_from_datetime)
+    new_df.loc[:, "created_at"] = created_times
+
+    new_df.loc[new_df.loc[:, 'is_retweet'].notnull(), 'is_retweet'] = "true"
+    new_df.loc[new_df.loc[:, 'is_retweet'].isnull(), 'is_retweet'] = "false"
+    return new_df
+
+
 api = twitter.Api(consumer_key=consumer_key,
                   consumer_secret=consumer_secret,
                   access_token_key=access_token_key,
                   access_token_secret=access_token_secret)
 
-
-
 # Trump's Twitter ID == 25073877
 timeline = api.GetUserTimeline(user_id=user_id, count=200)
 new_data = [instance.AsDict() for instance in timeline]
 
+existing_data = load_json(json_data_file_path)
+time_last_updated = get_last_updated_timestamp_for(existing_data, str_from_twitter_to_datetime)
 
-try:
-    existing_data = get_existing_data(data_file)
-    data = {**new_data, **existing_data}
-except:
-    data = new_data
+dont_need_after_this = get_idx_to_remove_duplicates(new_data, time_last_updated, str_from_twitter_to_datetime)
+updated_data = new_data[: dont_need_after_this] + existing_data
 
+dump_json(json_data_file_path, updated_data)
 
-with open(data_file, 'w') as outfile:
-    json.dump(data, outfile)
+new_df = pd.DataFrame(new_data, columns=col_names, dtype=str)
+new_df = standardize_dataframe_format(new_df)
+standardized_new_data = list(new_df.T.to_dict().values())
 
+main_data = load_json(database_path)
+time_last_updated = get_last_updated_timestamp_for(main_data, str_from_db_to_datetime)
+dont_need_after_this = get_idx_to_remove_duplicates(standardized_new_data, time_last_updated, str_from_db_to_datetime)
+updated_main_data = standardized_new_data[: dont_need_after_this] + main_data
 
-new_data = pd.DataFrame(data, columns = col_names)
+dump_json(database_path, updated_main_data)
 
-new_data.loc[:, "source"] = new_data.loc[:, "source"].map(get_source_from_a_tag)
-
-created_times = new_data.loc[:, "created_at"]
-created_times = created_times.map(str_to_datetime)
-created_times = created_times.map(utc_to_est_tz)
-created_times = created_times.map(str_from_datetime)
-new_data.loc[:, "created_at"] = created_times
-
-new_data.loc[new_data.loc[:, 'is_retweet'].notnull(), 'is_retweet'] = "true"
-new_data.loc[new_data.loc[:, 'is_retweet'].isnull(), 'is_retweet'] = "false"
-
-text_overlap = pd.merge(df, new_data, on="id_str", how='inner')
-text_overlap = text_overlap.loc[:, "text"]
-df.query("text not in text_overlap")
-
-
-i = -1
-text = data[i]['text']
-tweet_time = data[i]['created_at']
-time_zone = data[i]['user']['time_zone']
-retweet_count = data[i]['retweet_count']
-
-word_tokens = word_tokenize(text)
-sent_tokens = sent_tokenize(text)
-
-
-df = pd.read_csv(database)
