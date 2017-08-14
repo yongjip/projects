@@ -22,7 +22,7 @@ class RawTwitterDataMerger:
         print("Datasets Are Merged")
         print("Check Data Attribute.")
 
-    def drop_duplicate(self, dedup_by="text", sort_by="id"):
+    def drop_duplicates(self, dedup_by="text", sort_by="id"):
         df = pd.DataFrame(self.data, dtype='str')
         df = df.drop_duplicates(dedup_by)
         df = df.sort_values(sort_by, ascending=False)
@@ -44,5 +44,5 @@ if __name__ == "__main__":
 
     merger = RawTwitterDataMerger()
     merger.merge(part1, part2)
-    merger.drop_duplicate()
+    merger.drop_duplicates()
     merger.dump_json(output_file_path)
