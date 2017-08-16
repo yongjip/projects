@@ -1,3 +1,14 @@
+"""
+List of keys in the raw data:
+    ['contributors', 'coordinates', 'created_at', 'entities',
+    'extended_entities', 'favorite_count', 'favorited', 'geo', 'id',
+    'id_str', 'in_reply_to_screen_name', 'in_reply_to_status_id',
+    'in_reply_to_status_id_str', 'in_reply_to_user_id',
+    'in_reply_to_user_id_str', 'is_quote_status', 'lang', 'place',
+    'possibly_sensitive', 'possibly_sensitive_appealable', 'quoted_status',
+    'quoted_status_id', 'quoted_status_id_str', 'retweet_count',
+    'retweeted', 'retweeted_status', 'source', 'text', 'truncated', 'user']
+"""
 import pytz
 import re
 import nltk
@@ -17,12 +28,6 @@ def load_json(file_path):
         data = json.load(json_file)
     return data
 
-output_path = "production_data/trump_tweets_with_scores.json"
-db_path = "data/all_trump_tweets.json"
-db = load_json(db_path)
-main_df = pd.DataFrame(db, dtype=str)
-#df_without_retweet = main_df[main_df["retweeted_status"].isnull()]
-
 
 def preprocess_tweets(text):
     out = ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", text).split())
@@ -34,7 +39,7 @@ def ampersand_replacer(text):
     return out
 
 
-def get_source_from_a_tag(a_tag):
+def get_source_from_anchor_tag(a_tag):
     out = re.findall(r"\<a.+\>([^\<\>]+)\<\/a\>", a_tag)[0]
     return out
 
@@ -42,6 +47,17 @@ def get_source_from_a_tag(a_tag):
 def utc_to_est_tz(utc_dt):
     est_tz = pytz.timezone('US/Eastern')
     return utc_dt.replace(tzinfo=timezone.utc).astimezone(tz=est_tz)
+
+
+cols_to_drop = ['contributors', 'coordinates', 'favorited', 'geo', 'retweeted', 'in_reply_to_user_id', 'in_reply_to_user_id_str', 'possibly_sensitive', 'possibly_sensitive_appealable']
+output_path = "cleaned_data/trumps_twitter_data_with_scores.json"
+db_path = "raw_data_container/raw_trumps_tweets_all.json"
+db = load_json(db_path)
+main_df = pd.DataFrame(db, dtype=str)
+main_df.drop(cols_to_drop, axis=1, inplace=True)
+main_df.loc[:, "source"] = main_df.loc[:, "source"].map(get_source_from_anchor_tag)
+main_df["is_retweeted"] = main_df.loc[:, "retweeted_status"].notnull()
+#df_without_retweet = main_df[main_df["retweeted_status"].isnull()]
 
 
 sid = SentimentIntensityAnalyzer()
@@ -65,7 +81,6 @@ for i in main_df.index:
     data_list.append((datetime_object, twt, scores))
 
 main_df.loc[:, "polarity_scores"] = list_of_scores
-main_df.loc[:, "source"] = main_df.loc[:, "source"].map(get_source_from_a_tag)
 
 plt.plot(times[: 20], polarities[: 20])
 #plt.show()
