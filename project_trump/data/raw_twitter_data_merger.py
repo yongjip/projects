@@ -36,13 +36,14 @@ class RawTwitterDataMerger:
         print("Output File Orient:", orient)
         print("Check Directory:", output_path)
 
-
+'''
 if __name__ == "__main__":
-    output_file_path = "data/raw_trumps_tweets_all.json"
-    part1 = 'data/raw_trump_tweets_part_1.json'
-    part2 = 'data/raw_trump_tweets_part_2.json'
+    output_file_path = "data_container/raw_trumps_tweets_all.json"
+    part1 = 'data_container/raw_trump_tweets_part_1.json'
+    part2 = 'data_container/raw_trump_tweets_part_2.json'
 
     merger = RawTwitterDataMerger()
     merger.merge(part1, part2)
     merger.drop_duplicates()
     merger.dump_json(output_file_path)
+'''

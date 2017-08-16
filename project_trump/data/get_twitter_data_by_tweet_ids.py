@@ -16,8 +16,8 @@ def dump_json(file_path, json_data):
         json.dump(json_data, outfile)
 
 
-output_path = 'data/trump_tweets_part1_2.json'
-tweet_id_path = 'data/all_ids_til_2016_12_7.json'
+output_path = 'data_container/trump_tweets_part1_2.json'
+tweet_id_path = 'data_container/all_ids_til_2016_12_7.json'
 tweet_ids = load_json(tweet_id_path)
 
 
