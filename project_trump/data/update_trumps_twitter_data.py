@@ -11,8 +11,8 @@ screen_name = "realDonaldTrump"
 user_id = 25073877
 
 if __name__ == "__main__":
-    new_file_path = 'data_container/new_trumps_tweets.json'
-    database_path = 'data_container/raw_trumps_tweets_all.json'
+    new_file_path = 'raw_data_container/new_trumps_tweets.json'
+    database_path = 'raw_data_container/raw_trumps_tweets_all.json'
 
     # Get new tweets
     updater = TweetUpdater()
