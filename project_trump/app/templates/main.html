@@ -1,0 +1,32 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %} Trump Project {% endblock %}
+
+{% block styles -%}
+    {{super()}}  
+    <link rel="stylesheet" type="text/css"
+          href="static/css/main.css?q=3">
+{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Trump Project</a>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="card-group">
+	{% for tweet in tweets %}
+	<div class="card">
+		<p>{{ tweet.created_at }}</p>
+		<p>{{ tweet.text }}</p>
+		<p>{{ tweet.polarity_scores }}</p>
+	</div>
+	{% endfor %}
+</div>
+{% endblock %}
