@@ -1,6 +1,6 @@
 import tweepy
-from raw_twitter_data_merger import RawTwitterDataMerger
-from tweet_updater import TweetUpdater
+from trumpy.raw_twitter_data_merger import RawTwitterDataMerger
+from trumpy.recent_3200_tweets_collector import Recent3200TweetsCollector
 from twitter_api_credential_info import *
 
 
@@ -15,7 +15,7 @@ if __name__ == "__main__":
     database_path = 'raw_data_container/raw_trumps_tweets_all.json'
 
     # Get new tweets
-    updater = TweetUpdater()
+    updater = Recent3200TweetsCollector()
     updater.api = api
     updater.get_tweets_by_id(user_id)
     # Save the tweets
