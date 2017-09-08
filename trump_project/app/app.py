@@ -25,7 +25,7 @@ q = trump_twitter_data.select().order_by('id DESC').limit(20)
 result = session.execute(q)
 outputs = result.fetchall()
 data = pd.DataFrame(outputs, columns=cols)
-tweets = data.T.to_dict().values()
+tweets = list(data.T.to_dict().values())
 
 app = Flask(__name__)
 Bootstrap(app)
