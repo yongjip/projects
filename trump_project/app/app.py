@@ -7,9 +7,11 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 import pandas as pd
 from db_url import url
+from content_management import Content
 
+TOPIC_DICT = Content()
+'''
 Base = declarative_base()
-
 table_name = 'trump_twitter_data'
 url = url
 
@@ -26,22 +28,22 @@ result = session.execute(q)
 outputs = result.fetchall()
 data = pd.DataFrame(outputs, columns=cols)
 tweets = data.T.to_dict().values()
+'''
 
 app = Flask(__name__)
 Bootstrap(app)
-#DATA_PATH = "../data/cleaned_data/trumps_twitter_data_with_scores.json"
-#DATA_PATH = "/var/www/projects/trump_project/data/cleaned_data/trumps_twitter_data_with_scores.json"
 
 
 @app.route("/")
 def hello():
-    return render_template("main.html", tweets=tweets)
+    return render_template("main2.html")
 
 
-def main():
-    app.debug = True
-    app.run()
+@app.route('/dashboard/')
+def dashboard():
+    return render_template("dashboard.html", TOPIC_DICT=TOPIC_DICT)
 
 
 if __name__ == "__main__":
-    main()
+    app.debug = True
+    app.run()
