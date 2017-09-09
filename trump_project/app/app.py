@@ -5,11 +5,11 @@ from data_reader import get_recent20
 app = Flask(__name__)
 Bootstrap(app)
 DATA_PATH = "../data/cleaned_data/trumps_twitter_data_with_scores.json"
-DATA_PATH = "/var/www/projects/trump_project/data/cleaned_data/trumps_twitter_data_with_scores.json"
+# DATA_PATH = "/var/www/projects/trump_project/data/cleaned_data/trumps_twitter_data_with_scores.json"
 
 
 @app.route("/")
-def hello():
+def home():
     return render_template("main.html", tweets=get_recent20(DATA_PATH))
 
 
