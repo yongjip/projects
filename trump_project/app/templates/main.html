@@ -5,15 +5,23 @@
 {% block styles -%}
     {{super()}}  
     <link rel="stylesheet" type="text/css"
-          href="static/css/main.css?q=3">
+          href="static/css/main.css?q=48">
+{% endblock %}
+
+{% block scripts %}
+  {{super()}}
+  <script src="https://use.fontawesome.com/3e8db64afa.js"></script>
 {% endblock %}
 
 {% block navbar %}
-<nav class="navbar navbar-inverse">
+<nav class="navbar navbar-fixed-top">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
-      <a class="navbar-brand" href="#">Trump Project</a>
+      <a class="navbar-brand" href="#">
+        <i class="fa fa-twitter" aria-hidden="true"></i>
+        Trump Project
+      </a>
     </div>
   </div>
 </nav>
@@ -22,12 +30,24 @@
 {% block content %}
 <div class="card-group">
 	{% for tweet in tweets %}
-	<div class="card">
-		<p>{{ tweet.created_at }}</p>
-		<p>{{ tweet.text }}</p>
-		<p>{{ tweet.compound_score }}</p>
-
-	</div>
+	<div class="card">	
+    <div class="date-container">
+      <p class="date month">{{ tweet.created_at.strftime("%b") }}</p>
+      <p class="date day">{{ tweet.created_at.day }}</p>
+      <p class="date year">{{ tweet.created_at.year }}</p>
+    </div>
+    <div class="card-content">
+      <p>{{ tweet.text }}</p>
+    </div>
+    <div class="score-container">
+      <p class="score">{{ "{0:.0f}%".format(tweet.compound_score * 100) }}</p>
+    </div>
+    <div class="sentiment-icon">
+      <p class="icon">
+        <i class="fa fa-meh-o icon" aria-hidden="true"></i>
+      </p>
+    </div>
+ </div>
 	{% endfor %}
 </div>
 {% endblock %}

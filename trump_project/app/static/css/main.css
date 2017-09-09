@@ -2,15 +2,82 @@ body {
 	background-color: rgb(237, 241, 247);
 }
 
+.navbar {
+    background-color: #2196F3;
+}
+
+.navbar-brand {
+    color: white;
+    font-size: 20px;
+}
+
+.card-group {
+    margin-top: 71px;
+}
+
 .card {
 	background-color: white;
 	margin-top: 31px;
     margin-left: 20%;
-    padding: 20px 30px;
-    border-radius: 5px;
+    border-radius: 1px;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     transition: 0.3s;
     width: 60%;
+    height: 100px;
+    display: block;
+}
+
+.date-container {
+    height: 100%;
+    width: 13%;
+    float: left;
+    background-color: #2196F3;
+    padding: 2px;
+}
+
+.date {
+    text-align: center;
+    color: white;
+    margin: 0;
+}
+
+.month { font-size: 28px;}
+.day { font-size: 27px;}
+.year { font-size: 10px;}
+
+.card-content {
+    height: 100%;
+    width: 64%;
+    float: left;
+    padding: 10px 15px 10px 15px;
+    font-size: 16px;
+}
+
+.score-container {
+    height: 100%;
+    width: 13%;
+    float: left;
+    background-color: #E3F2FD;
+}
+
+.score {
+    text-align: center;
+    margin-top: 26px;
+    font-size: 33px;
+}
+
+.sentiment-icon {
+    height: 100%;
+    width: 10%;
+    float: left;
+    background-color: green;
+    background-color: #BBDEFB;
+}
+
+.icon {
+    text-align: center;
+    font-size: 60px;
+    margin: 7.5px 0px 0px 0px;
 }
 
 .card:hover {
