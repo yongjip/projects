@@ -3,7 +3,7 @@ from trumpy.recent_3200_tweets_collector import Recent3200TweetsCollector
 from twitter_api_credential_info import *
 from trumpy.etl import ETL
 from trumpy.db_updater import DBUpdater
-from session import url
+from trumpy.db_url import url
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token_key, access_token_secret)
